@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes App</title>
+  <style>
+    textarea {
+      width: 300px;
+      height: 150px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Notes App</h2>
+
+  <textarea id="notesArea" placeholder="Type your notes here..."></textarea>
+
+  <button id="saveBtn">Save Notes</button>
+  <button id="loadBtn">Load Notes</button>
+  <button id="clearBtn">Clear Notes</button>
+
+  <script>
+    const notesArea = document.getElementById("notesArea");
+    const saveBtn = document.getElementById("saveBtn");
+    const loadBtn = document.getElementById("loadBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    // ----------------------
+    // 1. Load saved notes on page load
+    // ----------------------
+    window.addEventListener("load", () => {
+      const savedNotes = localStorage.getItem("userNotes");
+      if (savedNotes) {
+        notesArea.value = savedNotes;
+      }
+    });
+
+    // ----------------------
+    // 2. Save notes button
+    // ----------------------
+    saveBtn.addEventListener("click", () => {
+      const notes = notesArea.value.trim();
+
+      if (notes === "") {
+        alert("Cannot save empty notes!");
+        return;
+      }
+
+      localStorage.setItem("userNotes", notes);
+      alert("Notes saved successfully!");
+    });
+
+    // ----------------------
+    // 3. Load notes button
+    // ----------------------
+    loadBtn.addEventListener("click", () => {
+      const savedNotes = localStorage.getItem("userNotes");
+
+      if (savedNotes) {
+        notesArea.value = savedNotes;
+      } else {
+        alert("No notes found!");
+      }
+    });
+
+    // ----------------------
+    // 4. Clear notes button
+    // ----------------------
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem("userNotes");
+      notesArea.value = "";
+      alert("Notes cleared!");
+    });
+
+  </script>
+
+</body>
+</html>
