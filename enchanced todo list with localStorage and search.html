@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Enhanced Todo List</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 8px;
+      margin: 5px 0;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+    }
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+      background: #d9ffd9;
+    }
+    .task-text {
+      flex: 1;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background: red;
+      color: white;
+      padding: 5px 8px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
+
+</head>
+<body>
+
+  <h2>Enhanced Todo List</h2>
+
+  <input type="text" id="taskInput" placeholder="Enter a new task..." />
+  <button id="addBtn">Add Task</button>
+
+  <br><br>
+
+  <input type="text" id="searchInput" placeholder="Search tasks..." />
+
+  <ul id="taskList"></ul>
+
+  <script>
+    let tasks = [];
+
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+    const searchInput = document.getElementById("searchInput");
+
+    // Load tasks at startup
+    window.addEventListener("load", () => {
+      const saved = localStorage.getItem("tasks");
+      if (saved) {
+        tasks = JSON.parse(saved);
+        renderTasks(tasks);
+      }
+    });
+
+    // Save tasks to localStorage
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Add Task
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const text = taskInput.value.trim();
+      if (text === "") {
+        alert("Task cannot be empty!");
+        return;
+      }
+
+      const newTask = {
+        id: Date.now(),
+        text: text,
+        completed: false
+      };
+
+      tasks.push(newTask);
+      saveTasks();
+      renderTasks(tasks);
+
+      taskInput.value = "";
+    });
+
+    // Render tasks on screen
+    function renderTasks(taskArray) {
+      taskList.innerHTML = "";
+
+      taskArray.forEach(task => {
+        const li = document.createElement("li");
+        if (task.completed) li.classList.add("completed");
+
+        const span = document.createElement("span");
+        span.textContent = task.text;
+        span.className = "task-text";
+
+        // Toggle completed on click
+        span.addEventListener("click", () => {
+          task.completed = !task.completed;
+          saveTasks();
+          renderTasks(tasks);
+        });
+
+        // Remove button
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "X";
+        removeBtn.className = "remove-btn";
+        removeBtn.addEventListener("click", () => {
+          tasks = tasks.filter(t => t.id !== task.id);
+          saveTasks();
+          renderTasks(tasks);
+        });
+
+        li.appendChild(span);
+        li.appendChild(removeBtn);
+        taskList.appendChild(li);
+      });
+    }
+
+    // Real-time search
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = tasks.filter(task =>
+        task.text.toLowerCase().includes(query)
+      );
+      renderTasks(filtered);
+    });
+
+  </script>
+
+</body>
+</html>
